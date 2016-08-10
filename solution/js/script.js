@@ -23,7 +23,7 @@ var menuItemsUrl =
 var menuItemsTitleHtml = "snippets/menu-items-title.html";
 var menuItemHtml = "snippets/menu-item.html";
 
-// Convenience function for inserting innerHTML for 'select'
+// Convinience function for inserting innerHTML for 'select'
 var insertHtml = function (selector, html) {
   var targetElem = document.querySelector(selector);
   targetElem.innerHTML = html;
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 showLoading("#main-content");
 $ajaxUtils.sendGetRequest(
   allCategoriesUrl, 
-  [...], // ***** <---- TODO: STEP 1: Substitute [...] ******
+  buildAndShowHomeHTML, // ***** <---- TODO: STEP 1: Substitute [...] ******
   true); // Explicitely setting the flag to get JSON from server processed into an object literal
 });
 // *** finish **
@@ -97,13 +97,14 @@ function buildAndShowHomeHTML (categories) {
   $ajaxUtils.sendGetRequest(
     homeHtmlUrl,
     function (homeHtml) {
-
+      var chosenCategoryShortName = chooseRandomCategory(categories);
       // TODO: STEP 2: Here, call chooseRandomCategory, passing it retrieved 'categories'
       // Pay attention to what type of data that function returns vs what the chosenCategoryShortName
       // variable's name implies it expects.
       // var chosenCategoryShortName = ....
-      
-
+      var short_name = "'" + chosenCategoryShortName.short_name +"'" ;
+      var homeHtmlToInsertIntoMainPage = 
+        insertProperty(homeHtml, "randomCategoryShortName" ,short_name);
       // TODO: STEP 3: Substitute {{randomCategoryShortName}} in the home html snippet with the
       // chosen category from STEP 2. Use existing insertProperty function for that purpose.
       // Look through this code for an example of how to do use the insertProperty function.
@@ -116,13 +117,12 @@ function buildAndShowHomeHTML (categories) {
       // it into the home html snippet.
       // 
       // var homeHtmlToInsertIntoMainPage = ....
-      
-
+      //console.log(homeHtmlToInsertIntoMainPage)
+      insertHtml("#main-content", homeHtmlToInsertIntoMainPage);
       // TODO: STEP 4: Insert the the produced HTML in STEP 3 into the main page
       // Use the existing insertHtml function for that purpose. Look through this code for an example
       // of how to do that. 
-      // ....
-      
+      // ....      
     },
     false); // False here because we are getting just regular HTML from the server, so no need to process JSON.
 }
@@ -157,7 +157,7 @@ dc.loadMenuItems = function (categoryShort) {
 };
 
 
-// Builds HTML for the categories page based on the data
+// Builds HTML for the categiries page based on the data
 // from the server
 function buildAndShowCategoriesHTML (categories) {
   // Load title snippet of categories page
@@ -265,6 +265,7 @@ function buildMenuItemsViewHtml(categoryMenuItems,
     var html = menuItemHtml;
     html = 
       insertProperty(html, "short_name", menuItems[i].short_name);
+    
     html = 
       insertProperty(html, 
                      "catShortName",
@@ -289,6 +290,7 @@ function buildMenuItemsViewHtml(categoryMenuItems,
       insertProperty(html, 
                      "name",
                      menuItems[i].name);
+    
     html = 
       insertProperty(html, 
                      "description",
@@ -341,3 +343,4 @@ function insertItemPortionName(html,
 global.$dc = dc;
 
 })(window);
+
